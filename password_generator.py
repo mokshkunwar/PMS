@@ -22,22 +22,11 @@ def generate_password():
     return generated_password
 
 def validate_password(password):
-    if len(password) < 8:
-        flag = 1
-        return flag
-    elif re.search("\s", password):
-        flag = 1
-        return flag
-    elif not re.search("[a-z]", password):
-        flag = 1
-        return flag
-    elif not re.search("[A-Z]", password):
-        flag = 1
-        return flag
-    elif not re.search("[0-9]", password):
-        flag = 1
-        return flag
-    elif not re.search("[@!#$&%*]", password):
+    if len(password) < 8 and re.search("\s", password)\
+            and not re.search("[a-z]", password)\
+            and not re.search("[A-Z]", password)\
+            and not re.search("[0-9]", password)\
+            and not re.search("[@!#$&%*]", password):
         flag = 1
         return flag
     else:
@@ -96,22 +85,8 @@ def login():
         error = "Invalid credentials"
         return render_template('login.html',  error=error)
 
-# @app.route('/user-login', methods=['POST'])
-# def login():
-#     error = None
-#     username = request.form.get('username')
-#     password = request.form.get('password')
-#     with open("admins.json", 'r') as file:
-#         json_data = json.load(file)
-#         for key in json_data:
-#             if username == key['username'] and password == key['password']:
-#                 return render_template('home.html')
-#         error = "Invalid credentials"
-#         return render_template('login.html',  error=error)
-
 @app.route('/create_generate_password', methods=['POST'])
 def create_generate_password():
-    #legacy = request.form.get('legacy')
     password_creation_option = request.form.get('password_creation_option')
     if password_creation_option == 'create_password':
         return create_password()
