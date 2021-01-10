@@ -1,8 +1,8 @@
 import requests
 from flask import Flask, render_template, request, flash
 from flask_restful import Resource, Api
-import random, re
-import string, json
+import random,re
+import string,json
 import bcrypt
 import datetime
 from getpass import getpass
@@ -22,30 +22,37 @@ def generate_password():
     save_password(hashed_password, salt, username=username)
     return generated_password
 
+def validate_password(password):
+    if len(password) < 8:
+        print("Password did not mach with the criteria, please try with new password")
+        return
+    elif re.search("\s", password):
+        print("Spaces are not allowed, please try with new password")
+        return
+    elif not re.search("[a-z]", password):
+        print("Password did not mach with the criteria, please try with new password")
+        return
+    elif not re.search("[A-Z]", password):
+        print("Password did not mach with the criteria, please try with new password")
+        return
+    elif not re.search("[0-9]", password):
+        print("Password did not mach with the criteria, please try with new password")
+        return
+    elif not re.search("[@!#$&%*]", password):
+        print("Password did not mach with the criteria, please try with new password")
+        return
+
 #@app.route('/create_password', methods=['POST'])
 def create_password():
-
     i=1
     while(i<4):
         username = input('Enter the user name')
         password = input("Enter your password: ")
-        if len(password) < 8:
-            print("Password did not mach with the criteria, please try with new password")
-        elif re.search("\s", password):
-            print("Spaces are not allowed, please try with new password")
-        elif not re.search("[a-z]", password):
-            print("Password did not mach with the criteria, please try with new password")
-        elif not re.search("[A-Z]", password):
-            print("Password did not mach with the criteria, please try with new password")
-        elif not re.search("[0-9]", password):
-            print("Password did not mach with the criteria, please try with new password")
-        elif not re.search("[@!#$&%*]", password):
-            print("Password did not mach with the criteria, please try with new password")
-        else:
-            print("Let's save")
-            hashed_password,salt = hash_password(password)
-            save_password(hashed_password,salt,username)
-            break
+        validate_password(password)
+        print("Let's save")
+        hashed_password,salt = hash_password(password)
+        save_password(hashed_password,salt,username)
+        break
             # save the password here
         i = i + 1
     return "Password saved successfully"
