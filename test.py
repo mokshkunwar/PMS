@@ -19,8 +19,6 @@ class MyTestCase(unittest.TestCase):
 
         self.assertTrue(response.status, 400)
 
-    def tearDown(self):
-        pass
 
 if __name__ == '__main__':
     unittest.main()

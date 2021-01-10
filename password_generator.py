@@ -10,7 +10,6 @@ from getpass import getpass
 app = Flask(__name__)
 api = Api(app)
 
-#@app.route('/generated_password')
 def generate_password():
     '''
     This function will generate a new password when required whose length will be in between 12 to 15 characters.
@@ -23,36 +22,43 @@ def generate_password():
     return generated_password
 
 def validate_password(password):
-    error = "Password did not mach with the criteria, please try with new password"
     if len(password) < 8:
-        return error
+        flag = 1
+        return flag
     elif re.search("\s", password):
-        return error
+        flag = 1
+        return flag
     elif not re.search("[a-z]", password):
-        return error
+        flag = 1
+        return flag
     elif not re.search("[A-Z]", password):
-        return error
+        flag = 1
+        return flag
     elif not re.search("[0-9]", password):
-        return error
+        flag = 1
+        return flag
     elif not re.search("[@!#$&%*]", password):
-        return error
+        flag = 1
+        return flag
     else:
-        pass
+        flag = 0
+        return flag
 
-#@app.route('/create_password', methods=['POST'])
 def create_password():
-    i=1
-    while(i<4):
+    tries =1
+    while(tries<4):
         username = input('Enter the user name')
         password = input("Enter your password: ")
-        validate_password(password)
-        i = i + 1
-        print("Let's save")
-        hashed_password,salt = hash_password(password)
-        save_password(hashed_password,salt,username)
-        break
-            # save the password here
-    return "Password saved successfully"
+        flag = validate_password(password)
+        if flag==1:
+            print("Password did not mach with the criteria, please try with new password")
+            tries = tries + 1
+            continue
+        else:
+            print("Let's save")
+            hashed_password,salt = hash_password(password)
+            save_password(hashed_password,salt,username)
+            return "Password saved successfully"
 
 def hash_password(password):
     # encrypt user entered password
@@ -90,18 +96,18 @@ def login():
         error = "Invalid credentials"
         return render_template('login.html',  error=error)
 
-@app.route('/user-login', methods=['POST'])
-def login():
-    error = None
-    username = request.form.get('username')
-    password = request.form.get('password')
-    with open("admins.json", 'r') as file:
-        json_data = json.load(file)
-        for key in json_data:
-            if username == key['username'] and password == key['password']:
-                return render_template('home.html')
-        error = "Invalid credentials"
-        return render_template('login.html',  error=error)
+# @app.route('/user-login', methods=['POST'])
+# def login():
+#     error = None
+#     username = request.form.get('username')
+#     password = request.form.get('password')
+#     with open("admins.json", 'r') as file:
+#         json_data = json.load(file)
+#         for key in json_data:
+#             if username == key['username'] and password == key['password']:
+#                 return render_template('home.html')
+#         error = "Invalid credentials"
+#         return render_template('login.html',  error=error)
 
 @app.route('/create_generate_password', methods=['POST'])
 def create_generate_password():
