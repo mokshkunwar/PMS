@@ -6,6 +6,7 @@
 </head>
 <body>
     <form method="post" action="/create_generate_password">
+        {{ form.csrf_token }}
     <h1> Hello </h1>
     <label for="Legacy"><h3>Choose the system :</h3></label> <br>
     <select name="legacy" id="cars">

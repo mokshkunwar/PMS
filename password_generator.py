@@ -6,9 +6,11 @@ import string,json
 import bcrypt
 import datetime
 from getpass import getpass
+from flask_wtf.csrf import CSRFProtect
 
 app = Flask(__name__)
 api = Api(app)
+csrf = CSRFProtect(app)
 
 def generate_password():
     '''
