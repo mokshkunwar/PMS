@@ -23,24 +23,21 @@ def generate_password():
     return generated_password
 
 def validate_password(password):
+    error = "Password did not mach with the criteria, please try with new password"
     if len(password) < 8:
-        print("Password did not mach with the criteria, please try with new password")
-        return
+        return error
     elif re.search("\s", password):
-        print("Spaces are not allowed, please try with new password")
-        return
+        return error
     elif not re.search("[a-z]", password):
-        print("Password did not mach with the criteria, please try with new password")
-        return
+        return error
     elif not re.search("[A-Z]", password):
-        print("Password did not mach with the criteria, please try with new password")
-        return
+        return error
     elif not re.search("[0-9]", password):
-        print("Password did not mach with the criteria, please try with new password")
-        return
+        return error
     elif not re.search("[@!#$&%*]", password):
-        print("Password did not mach with the criteria, please try with new password")
-        return
+        return error
+    else:
+        pass
 
 #@app.route('/create_password', methods=['POST'])
 def create_password():
@@ -49,12 +46,12 @@ def create_password():
         username = input('Enter the user name')
         password = input("Enter your password: ")
         validate_password(password)
+        i = i + 1
         print("Let's save")
         hashed_password,salt = hash_password(password)
         save_password(hashed_password,salt,username)
         break
             # save the password here
-        i = i + 1
     return "Password saved successfully"
 
 def hash_password(password):
@@ -93,9 +90,22 @@ def login():
         error = "Invalid credentials"
         return render_template('login.html',  error=error)
 
+@app.route('/user-login', methods=['POST'])
+def login():
+    error = None
+    username = request.form.get('username')
+    password = request.form.get('password')
+    with open("admins.json", 'r') as file:
+        json_data = json.load(file)
+        for key in json_data:
+            if username == key['username'] and password == key['password']:
+                return render_template('home.html')
+        error = "Invalid credentials"
+        return render_template('login.html',  error=error)
+
 @app.route('/create_generate_password', methods=['POST'])
 def create_generate_password():
-    legacy = request.form.get('legacy')
+    #legacy = request.form.get('legacy')
     password_creation_option = request.form.get('password_creation_option')
     if password_creation_option == 'create_password':
         return create_password()
