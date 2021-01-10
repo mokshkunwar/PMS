@@ -42,7 +42,6 @@ def create_password():
         if flag==1:
             print("Password did not mach with the criteria, please try with new password")
             tries = tries + 1
-            continue
         else:
             print("Let's save")
             hashed_password,salt = hash_password(password)
