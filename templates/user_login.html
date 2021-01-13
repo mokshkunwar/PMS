@@ -5,9 +5,9 @@
     <title>Login </title>
 </head>
 <body>
-<h1> Welcome to PMS </h1>
-    <form method="post", action="/login_validation">
-        {{ form.csrf_token }}
+<h2>{{message}}</h2>
+<h1> Welcome! </h1>
+    <form method="post", action="/user-login-validation">
         <label>Username</label><br>
         <input type="text" name="username"><br>
         <label>Password</label><br>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Renew Password</title>
+</head>
+<body>
+<h1> Welcome {{username}} </h1>
+<h2>{{ error }}</h2>
+    <form method="post", action="/renew-password", content="renew">
+        <label>Username</label><br>
+        <input type="text" name="username"><br>
+        <label>Password</label><br>
+        <input type="password" name="password"><br>
+        <label> Confirm Password</label><br>
+        <input type="confirm_password" name="confirm_password"><br>
+        <input type="submit" value="Submit">
+    </form>
+
+<h3>The Password should match the following criteria:</h3>
+<h4>The password MUST contain at least 8 characters (12+ recommended).</h4>
+<h4>MUST contain at least one uppercase letter.</h4>
+<h4>MUST contain at least one lowercase letter.</h4>
+<h4>MUST contain at least one number.</h4>
+<h4>MUST contain at least one special character (@!#$&%*). </h4>
+</body>
+</html>
