@@ -7,7 +7,14 @@
 <body>
 <h1> Welcome {{username}} </h1>
 <h2>{{ error }}</h2>
-    <form method="post", action="/renew-password", content="renew">
+    <form method="post", action="/renew-password">
+         <label for="system"><h3>Choose the system :</h3></label> <br>
+        <select name="system" id="legacy">
+          <option value="HR">HR</option>
+          <option value="Finance">Finance</option>
+          <option value="IT">IT</option>
+        </select><br><br><br>
+
         <label>Username</label><br>
         <input type="text" name="username"><br>
         <label>Password</label><br>
