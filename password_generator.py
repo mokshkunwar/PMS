@@ -6,6 +6,8 @@ import string, json
 import bcrypt
 import datetime
 import pandas as pd
+import pyhibp
+from pyhibp import pwnedpasswords as pw
 
 app = Flask(__name__)
 api = Api(app)
@@ -42,6 +44,11 @@ def validate_password(password):
         criteria_satisfied = True
     return criteria_satisfied
 
+def check_pawned_password(password):
+    pyhibp.set_user_agent(ua="HIBP Application/0.0.1")
+    resp = pw.is_password_breached(password=password)
+    return resp
+
 @app.route('/create-password', methods=['POST'])
 def create_password():
     username = request.form.get('username')
@@ -53,6 +60,10 @@ def create_password():
     criteria_satisfied = validate_password(password)
     if criteria_satisfied == False:
         error = "Password did not mach with the criteria, please try with new password"
+        return render_template('register.html', error=error)
+    response = check_pawned_password(password)
+    if response > 10:
+        error = "This password is very common, please try with new password"
         return render_template('register.html', error=error)
     else:
         try:
@@ -88,6 +99,10 @@ def renew_password():
         if criteria_satisfied == False:
             error = "Password did not mach with the criteria, please try with new password"
             return render_template('renew.html', error=error)
+        response = check_pawned_password(password)
+        if response > 10:
+            error = "This password is very common, please try with new password"
+            return render_template('register.html', error=error)
         else:
             hashed_password, salt = hash_password(password)
             df = pd.read_csv('password.csv')
