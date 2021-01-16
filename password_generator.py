@@ -4,7 +4,7 @@ import random, re
 import string, json
 import datetime
 import pandas as pd
-from password_check import validate_password, check_pawned_password, hash_password, save_password, match_password
+from password_check import validate_password, check_pawned_password, hash_password, save_password, match_password, all_checks
 
 app = Flask(__name__)
 api = Api(app)
@@ -36,16 +36,10 @@ def create_password():
     password = request.form.get('password')
     confirm_password = request.form.get('confirm_password')
     system = request.form.get('system')
-    if password != confirm_password:
-        return render_template(register_html, error="Passwords Don't Match")
-    criteria_satisfied = validate_password(password)
-    if criteria_satisfied == False:
-        error = "Password did not mach with the criteria, please try with new password"
-        return render_template(register_html, error=error)
-    response = check_pawned_password(password)
-    if response > 10:
-        error = "This password is very common, please try with new password"
-        return render_template(register_html, error=error)
+    response = all_checks(password, confirm_password)
+    if response:
+        return render_template(register_html,
+                               error=response)
     df = pd.read_csv(file_name)
     row = df.loc[(df['Username'] == username) & (df['System'] == system)]
     if row.empty:
@@ -65,9 +59,6 @@ def renew_password():
     confirm_password = request.form.get('confirm_password')
     system = request.form.get('system')
     df = pd.read_csv(file_name)
-    if password != confirm_password:
-        return render_template(renew_html, error="Passwords Don't Match")
-
     row = df.loc[(df['Username'] == username) & (df['System'] == system)]
     if row.empty:
         error = "Invalid details"
@@ -79,23 +70,18 @@ def renew_password():
         if response == True:
             error = "Password cannot be same as of previous one"
             return render_template(renew_html, error=error)
-        criteria_satisfied = validate_password(password)
-        if criteria_satisfied == False:
-            error = "Password did not mach with the criteria, please try with new password"
-            return render_template(renew_html, error=error)
-        response = check_pawned_password(password)
-        if response > 10:
-            error = "This password is very common, please try with new password"
-            return render_template(register_html, error=error)
-        else:
-            hashed_password, salt = hash_password(password)
-            index = df.loc[df['Username'] == username].index[0]
-            df['Hashed_Password'][index] = hashed_password
-            df['Salt'][index] = salt
-            df['Date'][index] = datetime.datetime.now()
-            df.to_csv(file_name, index=False)
-            message = "Password saved successfully, please login with new password"
-            return render_template(user_login_html, message=message)
+        response = all_checks(password, confirm_password)
+        if response:
+            return render_template(renew_html,
+                                   error=response)
+        hashed_password, salt = hash_password(password)
+        index = df.loc[df['Username'] == username].index[0]
+        df['Hashed_Password'][index] = hashed_password
+        df['Salt'][index] = salt
+        df['Date'][index] = datetime.datetime.now()
+        df.to_csv(file_name, index=False)
+        message = "Password saved successfully, please login with new password"
+        return render_template(user_login_html, message=message)
 
 @app.route('/login', methods=['GET'])
 def pms_home():
@@ -109,7 +95,7 @@ def user_login():
 def login():
     username = request.form.get('username')
     password = request.form.get('password')
-    with open('./admins.json', 'r') as file:
+    with open('admins.json', 'r') as file:
         json_data = json.load(file)
         for key in json_data:
             if username == key['username'] and password == key['password']:

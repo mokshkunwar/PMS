@@ -1,5 +1,6 @@
 import pyhibp
 from pyhibp import pwnedpasswords as pw
+from flask import render_template
 import bcrypt, re
 import datetime
 import pandas as pd
@@ -41,3 +42,16 @@ def match_password(hashed_password, password):
     if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
         return True
     return False
+
+def all_checks(password, confirm_password):
+    if password != confirm_password:
+        error = "Passwords Don't Match"
+        return error
+    criteria_satisfied = validate_password(password)
+    if criteria_satisfied == False:
+        error = "Password did not mach with the criteria, please try with new password"
+        return error
+    response = check_pawned_password(password)
+    if response > 10:
+        error = "This password is very common, please try with new password"
+        return error
