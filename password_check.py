@@ -29,13 +29,14 @@ def hash_password(password):
     return hashed_password, salt
 
 def save_password(hashed_password, salt, username, system):
+    file = 'password.csv'
     date = datetime.datetime.now()
     df2 = pd.DataFrame({'Username':[username],'System':[system], 'Salt':[salt],'Hashed_Password':[hashed_password],'Date':[date]})
-    with open('password.csv', 'rb') as file:
+    with open(file, 'rb') as file:
         if len(file.read()) == 0:
-            df2.to_csv('password.csv', mode='a', index=False)
+            df2.to_csv(file, mode='a', index=False)
         else:
-            df2.to_csv('password.csv', mode='a', header=False, index=False)
+            df2.to_csv(file, mode='a', header=False, index=False)
 
 def match_password(hashed_password, password):
     hashed_password = hashed_password.replace('b\'', '').replace('\'', '')
