@@ -70,8 +70,8 @@ def create_password():
             df = pd.read_csv('password.csv')
             row = df.loc[(df['Username'] == username) & (df['System'] == system)]
             return render_template('register.html',
-                                   error="The password is already generated for this user for {} system".format(
-                                       system))
+                                   error="The password is already generated for user '{}' in '{}' system".format(
+                                       username,system))
         except:
             hashed_password, salt = hash_password(password)
             save_password(hashed_password, salt, username, system)
@@ -147,7 +147,7 @@ def login():
     username = request.form.get('username')
     password = request.form.get('password')
     system = request.form.get('system')
-    with open("./admins.json", 'r') as file:
+    with open('admins.json', 'r') as file:
         json_data = json.load(file)
         for key in json_data:
             if username == key['username'] and password == key['password']:

@@ -5,7 +5,7 @@
     <title>Register</title>
 </head>
 <body>
-<h2>{{ error }}</h2>
+<h2 style="color:red;">{{ error }}</h2>
     <form method="post", action="/create-password">
          <label for="system"><h3>Choose the system :</h3></label> <br>
         <select name="system" id="legacy">
@@ -23,11 +23,12 @@
         <input type="submit" value="Submit">
     </form>
 
-<h3>The Password should match the following criteria:</h3>
-<h4>The password MUST contain at least 8 characters (12+ recommended).</h4>
-<h4>MUST contain at least one uppercase letter.</h4>
-<h4>MUST contain at least one lowercase letter.</h4>
-<h4>MUST contain at least one number.</h4>
-<h4>MUST contain at least one special character (@!#$&%*). </h4>
+<h3 style="color:green;">The Password should match the following criteria:</h3>
+<p style="color:green;"> The password MUST contain at least 8 characters (12+ recommended). <br>
+MUST contain at least one uppercase letter.<br>
+MUST contain at least one lowercase letter.<br>
+MUST contain at least one number.<br>
+MUST contain at least one special character (@!#$&%*).<br>
+</p>
 </body>
 </html>
