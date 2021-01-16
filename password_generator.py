@@ -1,6 +1,5 @@
-import requests
-from flask import Flask, render_template, request, flash
-from flask_restful import Resource, Api
+from flask import Flask, render_template, request
+from flask_restful import Api
 import random, re
 import string, json
 import bcrypt
@@ -20,13 +19,13 @@ def generate_password():
     '''
     username = request.form.get('username')
     system = request.form.get('system')
-    df = pd.read_csv('password.csv')
+    df = pd.read_csv(file_name)
     row = df.loc[(df['Username'] == username) & (df['System'] == system)]
     if row.empty:
         generated_password = ''.join(random.choices(string.ascii_letters + string.digits + "@!#$&%*@!#$&%*", k=16))
         hashed_password, salt = hash_password(generated_password)
         save_password(hashed_password, salt, username=username, system=system)
-        return render_template('user_login.html',
+        return render_template(user_login_html,
                                message="Password generated for {} is {}".format(username, generated_password))
     else:
         return render_template('generate_password.html',
@@ -56,24 +55,24 @@ def create_password():
     confirm_password = request.form.get('confirm_password')
     system = request.form.get('system')
     if password != confirm_password:
-        return render_template('register.html', error="Passwords Don't Match")
+        return render_template(register_html, error="Passwords Don't Match")
     criteria_satisfied = validate_password(password)
     if criteria_satisfied == False:
         error = "Password did not mach with the criteria, please try with new password"
-        return render_template('register.html', error=error)
+        return render_template(register_html, error=error)
     response = check_pawned_password(password)
     if response > 10:
         error = "This password is very common, please try with new password"
-        return render_template('register.html', error=error)
-    df = pd.read_csv('password.csv')
+        return render_template(register_html, error=error)
+    df = pd.read_csv(file_name)
     row = df.loc[(df['Username'] == username) & (df['System'] == system)]
     if row.empty:
         hashed_password, salt = hash_password(password)
         save_password(hashed_password, salt, username, system)
         message = "Password saved successfully, please login with new password"
-        return render_template('user_login.html', message=message)
+        return render_template(user_login_html, message=message)
     else:
-        return render_template('register.html',
+        return render_template(register_html,
                                error="The password is already generated for user '{}' in '{}' system".format(
                                    username, system))
 
@@ -83,38 +82,38 @@ def renew_password():
     password = request.form.get('password')
     confirm_password = request.form.get('confirm_password')
     system = request.form.get('system')
+    df = pd.read_csv(file_name)
     if password != confirm_password:
-        return render_template('renew.html', error="Passwords Don't Match")
-    df = pd.read_csv('password.csv')
+        return render_template(renew_html, error="Passwords Don't Match")
+
     row = df.loc[(df['Username'] == username) & (df['System'] == system)]
     if row.empty:
         error = "Invalid details"
-        return render_template('renew.html', error=error)
+        return render_template(renew_html, error=error)
     else:
         index = row.index[0]
         hashed_password = df['Hashed_Password'][index]
         response = match_password(hashed_password, password)
         if response == True:
             error = "Password cannot be same as of previous one"
-            return render_template('renew.html', error=error)
+            return render_template(renew_html, error=error)
         criteria_satisfied = validate_password(password)
         if criteria_satisfied == False:
             error = "Password did not mach with the criteria, please try with new password"
-            return render_template('renew.html', error=error)
+            return render_template(renew_html, error=error)
         response = check_pawned_password(password)
         if response > 10:
             error = "This password is very common, please try with new password"
-            return render_template('register.html', error=error)
+            return render_template(register_html, error=error)
         else:
             hashed_password, salt = hash_password(password)
-            df = pd.read_csv('password.csv')
             index = df.loc[df['Username'] == username].index[0]
             df['Hashed_Password'][index] = hashed_password
             df['Salt'][index] = salt
             df['Date'][index] = datetime.datetime.now()
-            df.to_csv('password.csv', index=False)
+            df.to_csv(file_name, index=False)
             message = "Password saved successfully, please login with new password"
-            return render_template('user_login.html', message=message)
+            return render_template(user_login_html, message=message)
 
 def hash_password(password):
     # encrypt user entered password
@@ -126,11 +125,11 @@ def hash_password(password):
 def save_password(hashed_password, salt, username, system):
     date = datetime.datetime.now()
     df2 = pd.DataFrame({'Username':[username],'System':[system], 'Salt':[salt],'Hashed_Password':[hashed_password],'Date':[date]})
-    with open('password.csv', 'rb') as file:
+    with open(file_name, 'rb') as file:
         if len(file.read()) == 0:
-            df2.to_csv('password.csv', mode='a', index=False)
+            df2.to_csv(file_name, mode='a', index=False)
         else:
-            df2.to_csv('password.csv', mode='a', header=False, index=False)
+            df2.to_csv(file_name, mode='a', header=False, index=False)
 
 @app.route('/login', methods=['GET'])
 def pms_home():
@@ -138,20 +137,18 @@ def pms_home():
 
 @app.route('/user-login', methods=['GET'])
 def user_login():
-    return render_template('user_login.html')
+    return render_template(user_login_html)
 
 @app.route('/login_validation', methods=['POST'])
 def login():
-    error = None
     username = request.form.get('username')
     password = request.form.get('password')
-    system = request.form.get('system')
     with open('./admins.json', 'r') as file:
         json_data = json.load(file)
         for key in json_data:
             if username == key['username'] and password == key['password']:
                 return render_template('home.html')
-        error = "Invalid credentials"
+        error = invalid_credentials
         return render_template('login.html', error=error)
 
 def match_password(hashed_password, password):
@@ -165,21 +162,21 @@ def user_login_validation():
     username = request.form.get('username')
     password = request.form.get('password')
     system = request.form.get('system')
-    df = pd.read_csv('password.csv')
+    df = pd.read_csv(file_name)
     row = df.loc[(df['Username'] == username) & (df['System'] == system)]
     if row.empty:
-        error = "Invalid credentials"
-        return render_template('user_login.html', error=error)
+        error = invalid_credentials
+        return render_template(user_login_html, error=error)
     else:
         index = row.index[0]
         hashed_password = df['Hashed_Password'][index]
         response = match_password(hashed_password, password)
         if response == False:
-            error = "Invalid credentials"
-            return render_template('user_login.html', error=error)
+            error = invalid_credentials
+            return render_template(user_login_html, error=error)
         else:
             if (datetime.datetime.now() - pd.to_datetime(df['Date'][index])).days >= 0:
-                return render_template('renew.html', error="Password is expired! Please change password",
+                return render_template(renew_html, error="Password is expired! Please change password",
                                        username=username)
             return render_template('user_home.html', username=username)
 
@@ -187,9 +184,14 @@ def user_login_validation():
 def create_generate_password():
     password_creation_option = request.form.get('password_creation_option')
     if password_creation_option == 'create_password':
-        return render_template('register.html')
+        return render_template(register_html)
     else:
         return render_template('generate_password.html')
 
 if __name__ == '__main__':
+    file_name = 'password.csv'
+    user_login_html = 'user_login.html'
+    register_html = 'register.html'
+    renew_html = 'renew.html'
+    invalid_credentials = "Invalid Credentials"
     app.run(debug=True)
