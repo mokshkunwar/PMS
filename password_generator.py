@@ -2,11 +2,9 @@ from flask import Flask, render_template, request
 from flask_restful import Api
 import random, re
 import string, json
-import bcrypt
 import datetime
 import pandas as pd
-import pyhibp
-from pyhibp import pwnedpasswords as pw
+from password_check import validate_password, check_pawned_password, hash_password, save_password, match_password
 
 app = Flask(__name__)
 api = Api(app)
@@ -31,22 +29,6 @@ def generate_password():
         return render_template('generate_password.html',
                                message="The password is already generated for user '{}' in '{}' system".format
                                (username,system))
-
-def validate_password(password):
-    if len(password) < 8 or re.search("\s", password) \
-            or not re.search("[a-z]", password) \
-            or not re.search("[A-Z]", password) \
-            or not re.search("[0-9]", password) \
-            or not re.search("[@!#$&%*]", password):
-        criteria_satisfied = False
-    else:
-        criteria_satisfied = True
-    return criteria_satisfied
-
-def check_pawned_password(password):
-    pyhibp.set_user_agent(ua="HIBP Application/0.0.1")
-    resp = pw.is_password_breached(password=password)
-    return resp
 
 @app.route('/create-password', methods=['POST'])
 def create_password():
@@ -115,22 +97,6 @@ def renew_password():
             message = "Password saved successfully, please login with new password"
             return render_template(user_login_html, message=message)
 
-def hash_password(password):
-    # encrypt user entered password
-    raw_password = bytes(password, 'utf-8')
-    salt = bcrypt.gensalt(12)
-    hashed_password = bcrypt.hashpw(raw_password, salt)
-    return hashed_password, salt
-
-def save_password(hashed_password, salt, username, system):
-    date = datetime.datetime.now()
-    df2 = pd.DataFrame({'Username':[username],'System':[system], 'Salt':[salt],'Hashed_Password':[hashed_password],'Date':[date]})
-    with open(file_name, 'rb') as file:
-        if len(file.read()) == 0:
-            df2.to_csv(file_name, mode='a', index=False)
-        else:
-            df2.to_csv(file_name, mode='a', header=False, index=False)
-
 @app.route('/login', methods=['GET'])
 def pms_home():
     return render_template('login.html')
@@ -150,12 +116,6 @@ def login():
                 return render_template('home.html')
         error = invalid_credentials
         return render_template('login.html', error=error)
-
-def match_password(hashed_password, password):
-    hashed_password = hashed_password.replace('b\'', '').replace('\'', '')
-    if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
-        return True
-    return False
 
 @app.route('/user-login-validation', methods=['POST'])
 def user_login_validation():
