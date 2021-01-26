@@ -83,8 +83,6 @@ class MyTestCase(unittest.TestCase):
             'confirm_password': 'Growth@21',
             'system': 'IT'}
         response = tester.post('/create-password', data=data, follow_redirects=True)
-        # import pdb
-        # pdb.set_trace()
         self.assertEqual(response.status_code, 200)
 
     def test_generate_password_fail(self):
@@ -129,6 +127,7 @@ class MyTestCase(unittest.TestCase):
         response = tester.post('/renew-password', data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
 
+    def test_match_password(self):
     def tearDown(self):
         pass
 
