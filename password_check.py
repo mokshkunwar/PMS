@@ -6,6 +6,7 @@ from flask import render_template
 import bcrypt, re
 import datetime
 import pandas as pd
+from utils.helper import save_to_file_mode_append, save_to_file_without_header
 
 config = configparser.ConfigParser(interpolation=None)
 config.read('./utils/config.ini')
@@ -40,9 +41,9 @@ def save_password(hashed_password, salt, username, system):
     df2 = pd.DataFrame({'Username':[username],'System':[system], 'Salt':[salt],'Hashed_Password':[hashed_password],'Date':[date]})
     with open('password.csv', 'rb') as file:
         if len(file.read()) == 0:
-            df2.to_csv('password.csv', mode='a', index=False)
+            save_to_file_mode_append(df2, 'password.csv')
         else:
-            df2.to_csv('password.csv', mode='a', header=False, index=False)
+            save_to_file_without_header(df2, 'password.csv')
 
 
 def match_password(hashed_password, password):
@@ -51,6 +52,7 @@ def match_password(hashed_password, password):
 
 
 def all_checks(password, confirm_password):
+    error=""
     pawned_pass_limit = int(config.get('PASSWORD', 'PAWNED_PASSWORD_LIMIT'))
     if password != confirm_password:
         error = "Passwords Don't Match"

@@ -1,6 +1,8 @@
 import unittest
 import password_generator
 from flask import Flask
+from unittest.mock import patch
+
 
 class MyTestCase(unittest.TestCase):
 
@@ -14,6 +16,7 @@ class MyTestCase(unittest.TestCase):
         # send login data
         response = tester.get('/login', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
+
 
     def test_pms_login_pass(self):
         tester = password_generator.app.test_client(self)
@@ -32,9 +35,7 @@ class MyTestCase(unittest.TestCase):
             'password': 'Test_1'}
         response = tester.post('/login_validation', data=credentials, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
-        import pdb
-        pdb.set_trace()
-        self.assertIn("Invalid Credentials", response.data)
+        self.assertIn("Invalid Credentials", str(response.data))
 
     def test_create_password_fail(self):
         tester = password_generator.app.test_client(self)
@@ -58,7 +59,7 @@ class MyTestCase(unittest.TestCase):
         response = tester.post('/create-password', data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
 
-    def test_create_password_fail_common_password(self):
+    def test_create_password_fail_check_pawned_password(self):
         tester = password_generator.app.test_client(self)
         # send login data
         data = {
@@ -69,15 +70,21 @@ class MyTestCase(unittest.TestCase):
         response = tester.post('/create-password', data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
 
-    def test_create_password_pass(self):
+    def mock_file(self, df, file_name):
+        return None
+
+    @patch('utils.helper.save_to_file', return_value=mock_file)
+    def test_create_password_pass(self, save_to_file):
         tester = password_generator.app.test_client(self)
         # send login data
         data = {
-            'username': 'testing_user_new',
+            'username': 'Love',
             'password': 'Growth@21',
             'confirm_password': 'Growth@21',
             'system': 'IT'}
         response = tester.post('/create-password', data=data, follow_redirects=True)
+        # import pdb
+        # pdb.set_trace()
         self.assertEqual(response.status_code, 200)
 
     def test_generate_password_fail(self):
@@ -116,12 +123,10 @@ class MyTestCase(unittest.TestCase):
         # send login data
         data = {
             'username': 'Honey',
-            'password': 'Test@1446',
-            'confirm_password': 'Test@1446',
+            'password': 'Test@1423',
+            'confirm_password': 'Test@1423',
             'system': 'Finance'}
         response = tester.post('/renew-password', data=data, follow_redirects=True)
-        # import pdb
-        # pdb.set_trace()
         self.assertEqual(response.status_code, 200)
 
     def tearDown(self):

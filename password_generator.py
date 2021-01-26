@@ -4,7 +4,11 @@ import random, re
 import string, json
 import datetime
 import pandas as pd
-from .password_check import hash_password, save_password, match_password, all_checks
+from password_check import hash_password, save_password, match_password, all_checks, validate_password
+import configparser
+from utils.helper import save_to_file
+config = configparser.ConfigParser(interpolation=None)
+config.read('./utils/config.ini')
 
 app = Flask(__name__)
 api = Api(app)
@@ -87,7 +91,7 @@ def renew_password():
         df['Hashed_Password'][index] = hashed_password
         df['Salt'][index] = salt
         df['Date'][index] = datetime.datetime.now()
-        df.to_csv(file_name, index=False)
+        save_to_file(df, file_name)
         message = "Password saved successfully, please login with new password"
         return render_template(user_login_html, message=message), 200
 
@@ -135,9 +139,14 @@ def user_login_validation():
             error = invalid_credentials
             return render_template(user_login_html, error=error)
         else:
-            if (datetime.datetime.now() - pd.to_datetime(df['Date'][index])).days >= 0:
+            password_min_chars = str(config.get('PASSWORD', 'CHAR_COUNT'))
+            required_chars = str(config.get('PASSWORD', 'REQUIRED_CHARS').split(',')[3])
+            if (datetime.datetime.now() - pd.to_datetime(df['Date'][index])).days >= 30:
                 return render_template(renew_html, error="Password is expired! Please change password",
-                                       username=username)
+                                       username=username, password_min_chars=password_min_chars, required_chars=required_chars)
+            if not validate_password(password):
+                return render_template(renew_html, error="Password criteria is revised! Please change password",
+                                       username=username, password_min_chars=password_min_chars, required_chars=required_chars)
             return render_template('user_home.html', username=username)
 
 @app.route('/create_generate_password', methods=['POST'])
