@@ -72,6 +72,8 @@ def renew_password():
     system = request.form.get('system')
     df = read_df_from_csv(file_names('file_name'))
     row = df.loc[(df['Username'] == username) & (df['System'] == system)]
+    import pdb
+    pdb.set_trace()
     if row.empty:
         error = "Invalid details"
         return render_template(renew_html, error=error),400
