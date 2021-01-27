@@ -41,8 +41,10 @@ def save_password(hashed_password, salt, username, system):
     df2 = pd.DataFrame({'Username':[username],'System':[system], 'Salt':[salt],'Hashed_Password':[hashed_password],'Date':[date]})
     with open('password.csv', 'rb') as file:
         if len(file.read()) == 0:
+            # used to put new record in empty database
             save_to_file_mode_append(df2, 'password.csv')
         else:
+            # used to append the record in db which already contain some data
             save_to_file_without_header(df2, 'password.csv')
 
 
@@ -55,7 +57,7 @@ def all_checks(password, confirm_password):
     error=""
     pawned_pass_limit = int(config.get('PASSWORD', 'PAWNED_PASSWORD_LIMIT'))
     if password != confirm_password:
-        error = "Passwords Don't Match"
+        error = "Passwords do not match"
     if not validate_password(password):
         error = "Password did not mach with the criteria, please try with new password"
     if check_pawned_password(password) > pawned_pass_limit:
