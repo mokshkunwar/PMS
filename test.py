@@ -3,8 +3,38 @@ import password_generator
 from unittest.mock import patch
 import pandas as pd
 import configparser
+
 config = configparser.ConfigParser(interpolation=None)
 config.read('./utils/config.ini')
+username1 = config.get('TEST-CREDENTIALS', 'USERNAME1')
+password1 = config.get('TEST-CREDENTIALS', 'PASSWORD1')
+username2 = config.get('TEST-CREDENTIALS', 'USERNAME2')
+password2 = config.get('TEST-CREDENTIALS', 'PASSWORD2')
+username3 = config.get('TEST-CREDENTIALS', 'USERNAME3')
+password3 = config.get('TEST-CREDENTIALS', 'PASSWORD3')
+username4 = config.get('TEST-CREDENTIALS', 'USERNAME4')
+password4 = config.get('TEST-CREDENTIALS', 'PASSWORD4')
+username5 = config.get('TEST-CREDENTIALS', 'USERNAME5')
+password5 = config.get('TEST-CREDENTIALS', 'PASSWORD5')
+username6 = config.get('TEST-CREDENTIALS', 'USERNAME6')
+password6 = config.get('TEST-CREDENTIALS', 'PASSWORD6')
+password6_wrong = config.get('TEST-CREDENTIALS', 'PASSWORD6_WRONG')
+username7 = config.get('TEST-CREDENTIALS', 'USERNAME7')
+password7 = config.get('TEST-CREDENTIALS', 'PASSWORD7')
+username8 = config.get('TEST-CREDENTIALS', 'USERNAME8')
+password8 = config.get('TEST-CREDENTIALS', 'PASSWORD8')
+username9 = config.get('TEST-CREDENTIALS', 'USERNAME9')
+password9 = config.get('TEST-CREDENTIALS', 'PASSWORD9')
+username10 = config.get('TEST-CREDENTIALS', 'USERNAME10')
+username11 = config.get('TEST-CREDENTIALS', 'USERNAME11')
+password11 = config.get('TEST-CREDENTIALS', 'PASSWORD11')
+password11_wrong = config.get('TEST-CREDENTIALS', 'PASSWORD11_WRONG')
+username12 = config.get('TEST-CREDENTIALS', 'USERNAME12')
+password12 = config.get('TEST-CREDENTIALS', 'PASSWORD12')
+username13 = config.get('TEST-CREDENTIALS', 'USERNAME13')
+password13 = config.get('TEST-CREDENTIALS', 'PASSWORD13')
+username14 = config.get('TEST-CREDENTIALS', 'USERNAME14')
+password14 = config.get('TEST-CREDENTIALS', 'PASSWORD14')
 
 class MyTestCase(unittest.TestCase):
     data_password_login_user = [['Sumit', 'HR', 'b\'$2b$12$BMRUlgdo.xDi52MuFxBSzO\'',
@@ -34,8 +64,8 @@ class MyTestCase(unittest.TestCase):
         tester = password_generator.app.test_client(self)
         # send login data
         credentials = {
-            'username': 'test@example.com',
-            'password': 'Test_1'}
+            'username': username1,
+            'password': password1}
         response = tester.post('/login_validation', data=credentials, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
         self.assertIn("Invalid Credentials", str(response.data))
@@ -45,8 +75,8 @@ class MyTestCase(unittest.TestCase):
         tester = password_generator.app.test_client(self)
         # send login data
         credentials = {
-            'username': 'test@example.com',
-            'password': 'Test_1234',
+            'username': username2,
+            'password': password2,
             'system': 'HR'}
         response = tester.post('/login_validation', data=credentials, follow_redirects=True)
         self.assertTrue(response.status_code, 200)
@@ -56,8 +86,8 @@ class MyTestCase(unittest.TestCase):
         tester = password_generator.app.test_client(self)
         # send login data
         credentials = {
-            'username': 'Sumit',
-            'password': 'Sumit@12',
+            'username': username3,
+            'password': password3,
             'system': 'HR'}
         response = tester.post('/user-login-validation', data=credentials, follow_redirects=True)
         self.assertTrue(response.status_code, 400)
@@ -68,11 +98,10 @@ class MyTestCase(unittest.TestCase):
         tester = password_generator.app.test_client(self)
         # send login data
         credentials = {
-            'username': str(config.get('TEST', 'USERNAME')),
-            'password': str(config.get('TEST', 'PASSWORD')),
-            'system': str(config.get('TEST', 'SYSTEM'))}
-        import pdb
-        pdb.set_trace()
+
+            'username': username4,
+            'password': password4,
+            'system': 'HR'}
         response = tester.post('/user-login-validation', data=credentials, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
 
@@ -83,9 +112,9 @@ class MyTestCase(unittest.TestCase):
         tester = password_generator.app.test_client(self)
         # send login data
         data = {
-            'username': 'test_user',
-            'password': 'Test_1',
-            'confirm_password': 'Test_1',
+            'username': username5,
+            'password': password5,
+            'confirm_password': password5,
             'system': 'IT'}
         response = tester.post('/create-password', data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
@@ -99,9 +128,9 @@ class MyTestCase(unittest.TestCase):
         tester = password_generator.app.test_client(self)
         # send login data
         data = {
-            'username': 'test_user',
-            'password': 'Joe1@1234',
-            'confirm_password': 'Joe_123',
+            'username': username6,
+            'password': password6,
+            'confirm_password': password6_wrong,
             'system': 'IT'}
         response = tester.post('/create-password', data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
@@ -119,9 +148,9 @@ class MyTestCase(unittest.TestCase):
         tester = password_generator.app.test_client(self)
         # send login data
         data = {
-            'username': 'test_user',
-            'password': 'Test@123',
-            'confirm_password': 'Test@123',
+            'username': username7,
+            'password': password7,
+            'confirm_password': password7,
             'system': 'IT'}
         response = tester.post('/create-password', data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
@@ -135,9 +164,9 @@ class MyTestCase(unittest.TestCase):
         tester = password_generator.app.test_client(self)
         # send login data
         data = {
-            'username': 'Honey',
-            'password': 'Growth@21',
-            'confirm_password': 'Growth@21',
+            'username': username8,
+            'password': password8,
+            'confirm_password': password8,
             'system': 'Finance'}
         response = tester.post('/create-password', data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
@@ -149,9 +178,9 @@ class MyTestCase(unittest.TestCase):
         tester = password_generator.app.test_client(self)
         # send login data
         data = {
-            'username': 'John',
-            'password': 'Growth@21',
-            'confirm_password': 'Growth@21',
+            'username': username9,
+            'password': password9,
+            'confirm_password': password9,
             'system': 'IT'}
         response = tester.post('/create-password', data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
@@ -163,7 +192,7 @@ class MyTestCase(unittest.TestCase):
         tester = password_generator.app.test_client(self)
         # send login data
         data = {
-            'username': 'Honey',
+            'username': username11,
             'system': 'Finance'}
         response = tester.post('/generate-password', data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
@@ -174,7 +203,7 @@ class MyTestCase(unittest.TestCase):
         tester = password_generator.app.test_client(self)
         # send login data
         data = {
-            'username': 'Jonny',
+            'username': username10,
             'system': 'IT'}
         response = tester.post('/generate-password', data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
@@ -185,9 +214,9 @@ class MyTestCase(unittest.TestCase):
         tester = password_generator.app.test_client(self)
         # send login data
         data = {
-            'username': 'Honey',
-            'password': 'Test_1',
-            'confirm_password': 'Test_12',
+            'username': username11,
+            'password': password11,
+            'confirm_password': password11_wrong,
             'system': 'IT'}
         response = tester.post('/renew-password', data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
@@ -201,9 +230,9 @@ class MyTestCase(unittest.TestCase):
         tester = password_generator.app.test_client(self)
         # send login data
         data = {
-            'username': 'Honey',
-            'password': 'Test_1',
-            'confirm_password': 'Test_12',
+            'username': username11,
+            'password': password11,
+            'confirm_password': password11_wrong,
             'system': 'Finance'}
         response = tester.post('/renew-password', data=data, follow_redirects=True)
         # import pdb
@@ -218,9 +247,9 @@ class MyTestCase(unittest.TestCase):
         tester = password_generator.app.test_client(self)
         # send login data
         data = {
-            'username': 'Honey',
-            'password': 'Test@1423',
-            'confirm_password': 'Test@1423',
+            'username': username12,
+            'password': password12,
+            'confirm_password': password12,
             'system': 'Finance'}
         response = tester.post('/renew-password', data=data, follow_redirects=True)
         # import pdb
@@ -236,9 +265,9 @@ class MyTestCase(unittest.TestCase):
         tester = password_generator.app.test_client(self)
         # send login data
         data = {
-            'username': 'Honey',
-            'password': 'Honey@12345',
-            'confirm_password': 'Honey@12345',
+            'username': username13,
+            'password': password13,
+            'confirm_password': password13,
             'system': 'Finance'}
         response = tester.post('/renew-password', data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
@@ -252,9 +281,9 @@ class MyTestCase(unittest.TestCase):
         tester = password_generator.app.test_client(self)
         # send login data
         data = {
-            'username': 'Honey',
-            'password': 'U12se23@13',
-            'confirm_password': 'U12se23@13',
+            'username': username14,
+            'password': password14,
+            'confirm_password': password14,
             'system': 'Finance'}
         response = tester.post('/renew-password', data=data, follow_redirects=True)
         # import pdb
