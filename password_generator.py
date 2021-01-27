@@ -6,7 +6,7 @@ import datetime
 import pandas as pd
 from password_check import hash_password, save_password, match_password, all_checks, validate_password
 import configparser
-from utils.helper import save_to_file, check_pms_login_credentials
+from utils.helper import save_to_file, check_pms_login_credentials, read_df_from_csv
 config = configparser.ConfigParser(interpolation=None)
 config.read('./utils/config.ini')
 
@@ -23,7 +23,7 @@ def generate_password():
     '''
     username = request.form.get('username')
     system = request.form.get('system')
-    df = pd.read_csv(file_name)
+    df = read_df_from_csv(file_name)
     row = df.loc[(df['Username'] == username) & (df['System'] == system)]
     if row.empty:
         generated_password = ''.join(random.choices(string.ascii_letters + string.digits + "@!#$&%*@!#$&%*", k=16))
@@ -49,7 +49,7 @@ def create_password():
     if response:
         return render_template(register_html,
                                error=response), 400
-    df = pd.read_csv(file_name)
+    df = read_df_from_csv(file_name)
     row = df.loc[(df['Username'] == username) & (df['System'] == system)]
     if row.empty:
         hashed_password, salt = hash_password(password)
@@ -70,7 +70,7 @@ def renew_password():
     password = request.form.get('password')
     confirm_password = request.form.get('confirm_password')
     system = request.form.get('system')
-    df = pd.read_csv(file_name)
+    df = read_df_from_csv(file_name)
     row = df.loc[(df['Username'] == username) & (df['System'] == system)]
     if row.empty:
         error = "Invalid details"
@@ -124,11 +124,11 @@ def user_login_validation():
     username = request.form.get('username')
     password = request.form.get('password')
     system = request.form.get('system')
-    df = pd.read_csv(file_name)
+    df = read_df_from_csv(file_name)
     row = df.loc[(df['Username'] == username) & (df['System'] == system)]
     if row.empty:
         error = invalid_credentials
-        return render_template(user_login_html, error=error)
+        return render_template(user_login_html, error=error), 400
     else:
         index = row.index[0]
         hashed_password = df['Hashed_Password'][index]

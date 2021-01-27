@@ -1,3 +1,5 @@
+import pandas as pd
+
 def save_to_file(df, file_name):
     df.to_csv(file_name, index=False)
 
@@ -15,3 +17,6 @@ def check_pms_login_credentials(username, password):
             if username == key['username'] and password == key['password']:
                 return True
         return False
+
+def read_df_from_csv(file_name):
+    return pd.read_csv(file_name)
