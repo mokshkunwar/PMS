@@ -1,8 +1,14 @@
 import unittest
 import password_generator
 from unittest.mock import patch
+import pandas as pd
 
 class MyTestCase(unittest.TestCase):
+    data_password_existing_user = [['Honey', 'Finance', 'b\'$2b$12$gc7ot/rXwH8nBO7nceltv.\'',
+                                    'b\'$2b$12$gc7ot/rXwH8nBO7nceltv.kt2vMYP501rKwD/BOHReagEOVk8CNGu\'',
+                                    '2021-01-27 00:40:12.155977']]
+    df_password_existing_user = pd.DataFrame(data_password_existing_user,
+                                             columns=['Username', 'System', 'Salt', 'Hashed_Password', 'Date'])
 
     def setUp(self):
         password_generator.app.config['TESTING'] = True
@@ -107,14 +113,15 @@ class MyTestCase(unittest.TestCase):
 
     @patch("password_check.check_pawned_password", return_value=5)
     @patch("password_check.save_to_file_without_header", return_value=None)
-    def test_create_password_fail_already_existed_user(self, pawned, save_file):
+    @patch("password_generator.read_df_from_csv", return_value=df_password_existing_user)
+    def test_create_password_fail_already_existed_user(self, pawned, save_file, df_pass_existing_user):
         tester = password_generator.app.test_client(self)
         # send login data
         data = {
-            'username': 'Love',
+            'username': 'Honey',
             'password': 'Growth@21',
             'confirm_password': 'Growth@21',
-            'system': 'IT'}
+            'system': 'Finance'}
         response = tester.post('/create-password', data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
 
@@ -133,7 +140,8 @@ class MyTestCase(unittest.TestCase):
 
     @patch("password_check.check_pawned_password", return_value=5)
     @patch("password_check.save_to_file_without_header", return_value=None)
-    def test_generate_password_fail_already_existed_user(self, pawned, save_file):
+    @patch("password_generator.read_df_from_csv", return_value=df_password_existing_user)
+    def test_generate_password_fail_already_existed_user(self, pawned, save_file, df_pass_existing_user):
         tester = password_generator.app.test_client(self)
         # send login data
         data = {
