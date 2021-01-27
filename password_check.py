@@ -2,7 +2,6 @@ import configparser
 
 import pyhibp
 from pyhibp import pwnedpasswords as pw
-from flask import render_template
 import bcrypt, re
 import datetime
 import pandas as pd

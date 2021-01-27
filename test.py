@@ -55,14 +55,12 @@ class MyTestCase(unittest.TestCase):
 
     def test_pms_home(self):
         tester = password_generator.app.test_client(self)
-        # send login data
         response = tester.get('/login', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
 
     @patch("password_generator.check_pms_login_credentials", return_value=False)
     def test_pms_login_fail(self, credentials_check):
         tester = password_generator.app.test_client(self)
-        # send login data
         credentials = {
             'username': username1,
             'password': password1}
@@ -73,7 +71,6 @@ class MyTestCase(unittest.TestCase):
     @patch("password_generator.check_pms_login_credentials", return_value=True)
     def test_pms_login_pass(self, credentials_check):
         tester = password_generator.app.test_client(self)
-        # send login data
         credentials = {
             'username': username2,
             'password': password2,
@@ -84,7 +81,6 @@ class MyTestCase(unittest.TestCase):
     @patch("password_generator.read_df_from_csv", return_value=df_password_new_user)
     def test_user_login_fail(self, df_pass_existing_user):
         tester = password_generator.app.test_client(self)
-        # send login data
         credentials = {
             'username': username3,
             'password': password3,
@@ -96,9 +92,7 @@ class MyTestCase(unittest.TestCase):
     @patch("password_generator.read_df_from_csv", return_value=df_password_login_user)
     def test_user_login_pass(self, df_pass_login_user):
         tester = password_generator.app.test_client(self)
-        # send login data
         credentials = {
-
             'username': username4,
             'password': password4,
             'system': 'HR'}
@@ -110,13 +104,11 @@ class MyTestCase(unittest.TestCase):
     @patch("password_generator.read_df_from_csv", return_value=df_password_new_user)
     def test_create_password_fail_criteria_matching(self, pawned, save_file, df_pass_existing_user):
         tester = password_generator.app.test_client(self)
-        # send login data
         data = {
             'username': username5,
             'password': password5,
             'confirm_password': password5,
             'system': 'IT'}
-        # response = tester.post('/create-password', data=data, follow_redirects=True)
         response = tester.post('/'+create_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
         res = "Password did not mach with the criteria, please try with new password"
@@ -127,13 +119,11 @@ class MyTestCase(unittest.TestCase):
     @patch("password_generator.read_df_from_csv", return_value=df_password_new_user)
     def test_create_password_fail_passwords_donot_match(self, pawned, save_file, df_pass_existing_user):
         tester = password_generator.app.test_client(self)
-        # send login data
         data = {
             'username': username6,
             'password': password6,
             'confirm_password': password6_wrong,
             'system': 'IT'}
-        # response = tester.post('/create-password', data=data, follow_redirects=True)
         response = tester.post('/' + create_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
         res = "Passwords do not match"
@@ -148,13 +138,11 @@ class MyTestCase(unittest.TestCase):
     @patch("password_generator.read_df_from_csv", return_value=df_password_new_user)
     def test_create_password_fail_check_pawned_password(self, pawned, save_file, df_pass_existing_user):
         tester = password_generator.app.test_client(self)
-        # send login data
         data = {
             'username': username7,
             'password': password7,
             'confirm_password': password7,
             'system': 'IT'}
-        # response = tester.post('/create-password', data=data, follow_redirects=True)
         response = tester.post('/' + create_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
         res = "This password is very common, please try with new password"
@@ -165,13 +153,11 @@ class MyTestCase(unittest.TestCase):
     @patch("password_generator.read_df_from_csv", return_value=df_password_new_user)
     def test_create_password_fail_already_existed_user(self, pawned, save_file, df_pass_existing_user):
         tester = password_generator.app.test_client(self)
-        # send login data
         data = {
             'username': username8,
             'password': password8,
             'confirm_password': password8,
             'system': 'Finance'}
-        # response = tester.post('/create-password', data=data, follow_redirects=True)
         response = tester.post('/' + create_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
 
@@ -180,13 +166,11 @@ class MyTestCase(unittest.TestCase):
     @patch("password_generator.read_df_from_csv", return_value=df_password_new_user)
     def test_create_password_pass(self, pawned, save_file, df_pass_existing_user):
         tester = password_generator.app.test_client(self)
-        # send login data
         data = {
             'username': username9,
             'password': password9,
             'confirm_password': password9,
             'system': 'IT'}
-        # response = tester.post('/create-password', data=data, follow_redirects=True)
         response = tester.post('/' + create_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
 
@@ -195,7 +179,6 @@ class MyTestCase(unittest.TestCase):
     @patch("password_generator.read_df_from_csv", return_value=df_password_new_user)
     def test_generate_password_fail_already_existed_user(self, pawned, save_file, df_pass_existing_user):
         tester = password_generator.app.test_client(self)
-        # send login data
         data = {
             'username': username11,
             'system': 'Finance'}
@@ -206,7 +189,6 @@ class MyTestCase(unittest.TestCase):
     @patch("password_generator.read_df_from_csv", return_value=df_password_new_user)
     def test_generate_password_pass(self, save_file, df_pass_existing_user):
         tester = password_generator.app.test_client(self)
-        # send login data
         data = {
             'username': username10,
             'system': 'IT'}
@@ -217,13 +199,11 @@ class MyTestCase(unittest.TestCase):
     @patch("password_generator.read_df_from_csv", return_value=df_password_new_user)
     def test_renew_password_fail_invalid_details(self, save_file, df_pass_existing_user):
         tester = password_generator.app.test_client(self)
-        # send login data
         data = {
             'username': username11,
             'password': password11,
             'confirm_password': password11_wrong,
             'system': 'IT'}
-        # response = tester.post('/renew-password', data=data, follow_redirects=True)
         response = tester.post('/' + renew_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
         res = "Invalid details"
@@ -234,13 +214,11 @@ class MyTestCase(unittest.TestCase):
     @patch("password_generator.read_df_from_csv", return_value=df_password_new_user)
     def test_renew_password_fail_citeria_not_matched(self, pawned, save_file, df_pass_existing_user):
         tester = password_generator.app.test_client(self)
-        # send login data
         data = {
             'username': username11,
             'password': password11,
             'confirm_password': password11_wrong,
             'system': 'Finance'}
-        # response = tester.post('/renew-password', data=data, follow_redirects=True)
         response = tester.post('/' + renew_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
         res = ">Password did not mach with the criteria, please try with new password"
@@ -250,13 +228,11 @@ class MyTestCase(unittest.TestCase):
     @patch("password_generator.read_df_from_csv", return_value=df_password_new_user)
     def test_renew_password_fail_used_previous_password(self, save_file, df_pass_existing_user):
         tester = password_generator.app.test_client(self)
-        # send login data
         data = {
             'username': username12,
             'password': password12,
             'confirm_password': password12,
             'system': 'Finance'}
-        # response = tester.post('/renew-password', data=data, follow_redirects=True)
         response = tester.post('/' + renew_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
         res = "Password cannot be same as of previous one"
@@ -267,13 +243,11 @@ class MyTestCase(unittest.TestCase):
     @patch("password_generator.read_df_from_csv", return_value=df_password_new_user)
     def test_renew_password_fail_pawned_password(self, pawned, save_file, df_pass_existing_user):
         tester = password_generator.app.test_client(self)
-        # send login data
         data = {
             'username': username13,
             'password': password13,
             'confirm_password': password13,
             'system': 'Finance'}
-        # response = tester.post('/renew-password', data=data, follow_redirects=True)
         response = tester.post('/' + renew_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
         res = "This password is very common, please try with new password"
@@ -284,13 +258,11 @@ class MyTestCase(unittest.TestCase):
     @patch("password_generator.read_df_from_csv", return_value=df_password_new_user)
     def test_renew_password_pass(self, pawned, save_file, df_pass_existing_user):
         tester = password_generator.app.test_client(self)
-        # send login data
         data = {
             'username': username14,
             'password': password14,
             'confirm_password': password14,
             'system': 'Finance'}
-        # response = tester.post('/renew-password', data=data, follow_redirects=True)
         response = tester.post('/'+renew_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
 
