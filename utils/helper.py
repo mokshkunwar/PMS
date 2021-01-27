@@ -20,3 +20,12 @@ def check_pms_login_credentials(username, password):
 
 def read_df_from_csv(file_name):
     return pd.read_csv(file_name)
+
+def file_names(name):
+    data={
+    'invalid_credentials' : "Invalid Credentials",
+    'user_login_html' : 'user_login.html',
+    'file_name' : 'password.csv'
+    }
+    if name in data:
+        return data[name]

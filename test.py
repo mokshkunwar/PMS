@@ -91,7 +91,7 @@ class MyTestCase(unittest.TestCase):
             'system': 'HR'}
         response = tester.post('/user-login-validation', data=credentials, follow_redirects=True)
         self.assertTrue(response.status_code, 400)
-        self.assertIn("invalid credentials", str(response.data))
+        self.assertIn("Invalid Credentials", str(response.data))
 
     @patch("password_generator.read_df_from_csv", return_value=df_password_login_user)
     def test_user_login_pass(self, df_pass_login_user):
@@ -116,7 +116,8 @@ class MyTestCase(unittest.TestCase):
             'password': password5,
             'confirm_password': password5,
             'system': 'IT'}
-        response = tester.post('/create-password', data=data, follow_redirects=True)
+        # response = tester.post('/create-password', data=data, follow_redirects=True)
+        response = tester.post('/'+create_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
         res = "Password did not mach with the criteria, please try with new password"
         self.assertIn(res, str(response.data))
@@ -132,7 +133,8 @@ class MyTestCase(unittest.TestCase):
             'password': password6,
             'confirm_password': password6_wrong,
             'system': 'IT'}
-        response = tester.post('/create-password', data=data, follow_redirects=True)
+        # response = tester.post('/create-password', data=data, follow_redirects=True)
+        response = tester.post('/' + create_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
         res = "Passwords do not match"
         self.assertIn(res, str(response.data))
@@ -152,7 +154,8 @@ class MyTestCase(unittest.TestCase):
             'password': password7,
             'confirm_password': password7,
             'system': 'IT'}
-        response = tester.post('/create-password', data=data, follow_redirects=True)
+        # response = tester.post('/create-password', data=data, follow_redirects=True)
+        response = tester.post('/' + create_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
         res = "This password is very common, please try with new password"
         self.assertIn(res, str(response.data))
@@ -168,7 +171,8 @@ class MyTestCase(unittest.TestCase):
             'password': password8,
             'confirm_password': password8,
             'system': 'Finance'}
-        response = tester.post('/create-password', data=data, follow_redirects=True)
+        # response = tester.post('/create-password', data=data, follow_redirects=True)
+        response = tester.post('/' + create_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
 
     @patch("password_check.check_pawned_password", return_value=5)
@@ -182,7 +186,8 @@ class MyTestCase(unittest.TestCase):
             'password': password9,
             'confirm_password': password9,
             'system': 'IT'}
-        response = tester.post('/create-password', data=data, follow_redirects=True)
+        # response = tester.post('/create-password', data=data, follow_redirects=True)
+        response = tester.post('/' + create_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
 
     @patch("password_check.check_pawned_password", return_value=5)
@@ -218,7 +223,8 @@ class MyTestCase(unittest.TestCase):
             'password': password11,
             'confirm_password': password11_wrong,
             'system': 'IT'}
-        response = tester.post('/renew-password', data=data, follow_redirects=True)
+        # response = tester.post('/renew-password', data=data, follow_redirects=True)
+        response = tester.post('/' + renew_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
         res = "Invalid details"
         self.assertIn(res, str(response.data))
@@ -234,9 +240,8 @@ class MyTestCase(unittest.TestCase):
             'password': password11,
             'confirm_password': password11_wrong,
             'system': 'Finance'}
-        response = tester.post('/renew-password', data=data, follow_redirects=True)
-        # import pdb
-        # pdb.set_trace()
+        # response = tester.post('/renew-password', data=data, follow_redirects=True)
+        response = tester.post('/' + renew_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
         res = ">Password did not mach with the criteria, please try with new password"
         self.assertIn(res, str(response.data))
@@ -251,9 +256,8 @@ class MyTestCase(unittest.TestCase):
             'password': password12,
             'confirm_password': password12,
             'system': 'Finance'}
-        response = tester.post('/renew-password', data=data, follow_redirects=True)
-        # import pdb
-        # pdb.set_trace()
+        # response = tester.post('/renew-password', data=data, follow_redirects=True)
+        response = tester.post('/' + renew_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
         res = "Password cannot be same as of previous one"
         self.assertIn(res, str(response.data))
@@ -269,7 +273,8 @@ class MyTestCase(unittest.TestCase):
             'password': password13,
             'confirm_password': password13,
             'system': 'Finance'}
-        response = tester.post('/renew-password', data=data, follow_redirects=True)
+        # response = tester.post('/renew-password', data=data, follow_redirects=True)
+        response = tester.post('/' + renew_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 400)
         res = "This password is very common, please try with new password"
         self.assertIn(res, str(response.data))
@@ -285,10 +290,11 @@ class MyTestCase(unittest.TestCase):
             'password': password14,
             'confirm_password': password14,
             'system': 'Finance'}
-        response = tester.post('/renew-password', data=data, follow_redirects=True)
-        # import pdb
-        # pdb.set_trace()
+        # response = tester.post('/renew-password', data=data, follow_redirects=True)
+        response = tester.post('/'+renew_password, data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
 
 if __name__ == '__main__':
+    renew_password = 'renew-password'
+    create_password ='create-password'
     unittest.main()

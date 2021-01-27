@@ -37,15 +37,16 @@ def hash_password(password):
 
 
 def save_password(hashed_password, salt, username, system):
+    file_name = "password.csv"
     date = datetime.datetime.now()
     df2 = pd.DataFrame({'Username':[username],'System':[system], 'Salt':[salt],'Hashed_Password':[hashed_password],'Date':[date]})
-    with open('password.csv', 'rb') as file:
+    with open(file_name, 'rb') as file:
         if len(file.read()) == 0:
             # used to put new record in empty database
-            save_to_file_mode_append(df2, 'password.csv')
+            save_to_file_mode_append(df2, file_name)
         else:
             # used to append the record in db which already contain some data
-            save_to_file_without_header(df2, 'password.csv')
+            save_to_file_without_header(df2, file_name)
 
 
 def match_password(hashed_password, password):
