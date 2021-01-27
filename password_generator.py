@@ -27,13 +27,13 @@ def generate_password():
         generated_password = ''.join(random.choices(string.ascii_letters + string.digits + "@!#$&%*@!#$&%*", k=16))
         hashed_password, salt = hash_password(generated_password)
         if not username:
-            return render_template('generate_password.html',
+            return render_template(file_names('generate_password'),
                                    message="username can be blank"),400
         save_password(hashed_password, salt, username=username, system=system)
         return render_template(file_names('user_login_html'),
                                    message="Password generated for {} is {}".format(username, generated_password)),200
     else:
-        return render_template('generate_password.html',
+        return render_template(file_names('generate_password'),
                                message="The password is already generated for user '{}' in '{}' system".format
                                (username,system)),400
 
@@ -72,8 +72,6 @@ def renew_password():
     system = request.form.get('system')
     df = read_df_from_csv(file_names('file_name'))
     row = df.loc[(df['Username'] == username) & (df['System'] == system)]
-    import pdb
-    pdb.set_trace()
     if row.empty:
         error = "Invalid details"
         return render_template(renew_html, error=error),400
@@ -151,7 +149,7 @@ def create_generate_password():
     if password_creation_option == 'create_password':
         return render_template(register_html)
     else:
-        return render_template('generate_password.html')
+        return render_template(file_names('generate_password'))
 
 if __name__ == '__main__':
     app.run(debug=True)

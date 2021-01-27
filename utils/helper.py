@@ -25,7 +25,8 @@ def file_names(name):
     data={
     'invalid_credentials' : "Invalid Credentials",
     'user_login_html' : 'user_login.html',
-    'file_name' : 'password.csv'
+    'file_name' : 'password.csv',
+    'generate_password' : 'generate_password.html'
     }
     if name in data:
         return data[name]
