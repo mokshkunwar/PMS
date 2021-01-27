@@ -70,7 +70,7 @@ def renew_password():
     password = request.form.get('password')
     confirm_password = request.form.get('confirm_password')
     system = request.form.get('system')
-    df = pd.read_csv(file_name)
+    df = read_df_from_csv(file_name)
     row = df.loc[(df['Username'] == username) & (df['System'] == system)]
     if row.empty:
         error = "Invalid details"
@@ -124,11 +124,11 @@ def user_login_validation():
     username = request.form.get('username')
     password = request.form.get('password')
     system = request.form.get('system')
-    df = pd.read_csv(file_name)
+    df = read_df_from_csv(file_name)
     row = df.loc[(df['Username'] == username) & (df['System'] == system)]
     if row.empty:
         error = invalid_credentials
-        return render_template(user_login_html, error=error)
+        return render_template(user_login_html, error=error), 400
     else:
         index = row.index[0]
         hashed_password = df['Hashed_Password'][index]
