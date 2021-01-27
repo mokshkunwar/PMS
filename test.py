@@ -15,8 +15,8 @@ class MyTestCase(unittest.TestCase):
         response = tester.get('/login', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
 
-
-    def test_pms_login_fail(self):
+    @patch("password_generator.check_pms_login_credentials", return_value=False)
+    def test_pms_login_fail(self, credentials_check):
         tester = password_generator.app.test_client(self)
         # send login data
         credentials = {
@@ -26,7 +26,8 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn("Invalid Credentials", str(response.data))
 
-    def test_pms_login_pass(self):
+    @patch("password_generator.check_pms_login_credentials", return_value=True)
+    def test_pms_login_pass(self,credentials_check):
         tester = password_generator.app.test_client(self)
         # send login data
         credentials = {
@@ -151,6 +152,7 @@ class MyTestCase(unittest.TestCase):
             'system': 'IT'}
         response = tester.post('/generate-password', data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
+
 
     @patch("password_generator.save_to_file", return_value=None)
     def test_renew_password_fail_invalid_details(self, save_file):

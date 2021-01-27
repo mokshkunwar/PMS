@@ -6,7 +6,7 @@ import datetime
 import pandas as pd
 from password_check import hash_password, save_password, match_password, all_checks, validate_password
 import configparser
-from utils.helper import save_to_file
+from utils.helper import save_to_file, check_pms_login_credentials
 config = configparser.ConfigParser(interpolation=None)
 config.read('./utils/config.ini')
 
@@ -109,13 +109,11 @@ def login():
     invalid_credentials = "Invalid Credentials"
     username = request.form.get('username')
     password = request.form.get('password')
-    with open('admins.json', 'r') as file:
-        json_data = json.load(file)
-        for key in json_data:
-            if username == key['username'] and password == key['password']:
-                return render_template('home.html'), 200
-        error = invalid_credentials
-        return render_template('login.html', error=error), 400
+    response = check_pms_login_credentials(username, password)
+    if response == True:
+        return render_template('home.html'), 200
+    error = invalid_credentials
+    return render_template('login.html', error=error), 400
 
 @app.route('/user-login-validation', methods=['POST'])
 def user_login_validation():
