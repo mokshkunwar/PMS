@@ -26,9 +26,12 @@ def generate_password():
     if row.empty:
         generated_password = ''.join(random.choices(string.ascii_letters + string.digits + "@!#$&%*@!#$&%*", k=16))
         hashed_password, salt = hash_password(generated_password)
+        if not username:
+            return render_template('generate_password.html',
+                                   message="username can be blank"),400
         save_password(hashed_password, salt, username=username, system=system)
         return render_template(file_names('user_login_html'),
-                               message="Password generated for {} is {}".format(username, generated_password)),200
+                                   message="Password generated for {} is {}".format(username, generated_password)),200
     else:
         return render_template('generate_password.html',
                                message="The password is already generated for user '{}' in '{}' system".format
@@ -49,6 +52,9 @@ def create_password():
     row = df.loc[(df['Username'] == username) & (df['System'] == system)]
     if row.empty:
         hashed_password, salt = hash_password(password)
+        if not username:
+            return render_template(register_html,
+                                   error="username can be blank"),400
         save_password(hashed_password, salt, username, system)
         message = "Password saved successfully, please login with new password"
         return render_template(file_names('user_login_html'), message=message),200
