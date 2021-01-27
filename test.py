@@ -2,6 +2,9 @@ import unittest
 import password_generator
 from unittest.mock import patch
 import pandas as pd
+import configparser
+config = configparser.ConfigParser(interpolation=None)
+config.read('./utils/config.ini')
 
 class MyTestCase(unittest.TestCase):
     data_password_login_user = [['Sumit', 'HR', 'b\'$2b$12$BMRUlgdo.xDi52MuFxBSzO\'',
@@ -65,9 +68,11 @@ class MyTestCase(unittest.TestCase):
         tester = password_generator.app.test_client(self)
         # send login data
         credentials = {
-            'username': 'Sumit',
-            'password': 'Sumit@123456',
-            'system': 'HR'}
+            'username': str(config.get('TEST', 'USERNAME')),
+            'password': str(config.get('TEST', 'PASSWORD')),
+            'system': str(config.get('TEST', 'SYSTEM'))}
+        import pdb
+        pdb.set_trace()
         response = tester.post('/user-login-validation', data=credentials, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
 
