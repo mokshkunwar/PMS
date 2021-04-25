@@ -1,0 +1,2 @@
+# Password-management-system(PMS)
+A password management system is used to keep track of all of the passwords required by the applications. Since the last two decades, the IT industry has seen a significant shift in the development of applications for various purposes. These applications have their usage in a spectrum ranging from healthcare, e-commerce, social media websites, mailing systems, manufacturing, retail, etc. The onus was on  the IT professionals to build utility software as fast as possible.
