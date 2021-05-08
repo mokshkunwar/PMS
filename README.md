@@ -4,7 +4,7 @@ A password management system is used to keep track of all of the passwords requi
 
 - ##### Check python version `$ python --version`
 - ##### Check pip version `$ pip --version`
-- ##### Clone the project `$ git clone https://github.com/meskigod/Password-Management-System.git`
+- ##### Clone the project `$ git clone https://github.com/mokshkunwar/PMS.git`
 - ##### Install python virtual environment `pip install pipenv`
 - #####  Activate Python environment `pipenv shell` 
 - #####  Install required packages  `pip install -r requirements.txt` 
